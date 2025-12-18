@@ -2,15 +2,15 @@ function sendData() {
   const image = document.getElementById("imageInput").files[0];
 
   if (!image) {
-    alert("Upload an image");
+    alert("Please upload an image");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(pos => {
+  navigator.geolocation.getCurrentPosition(position => {
     const formData = new FormData();
     formData.append("image", image);
-    formData.append("lat", pos.coords.latitude);
-    formData.append("lon", pos.coords.longitude);
+    formData.append("lat", position.coords.latitude);
+    formData.append("lon", position.coords.longitude);
 
     fetch("http://localhost:3000/analyze", {
       method: "POST",
@@ -18,8 +18,11 @@ function sendData() {
     })
     .then(res => res.json())
     .then(data => {
-      document.getElementById("status").innerText =
-        data.message;
+      document.getElementById("result").innerText =
+        data.message + " (" + data.location.lat + ", " + data.location.lon + ")";
+    })
+    .catch(err => {
+      document.getElementById("result").innerText = "Error connecting to backend";
     });
   });
 }
